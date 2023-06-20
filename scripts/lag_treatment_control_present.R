@@ -1,19 +1,20 @@
 ## Collider Bias 1 in TSCS
 
-library(dagitty)
-library(rethinking)
 library(ggdag)
 library(tidyr)
 library(tidyverse)
 library(statar)
 library(fixest)
+library(pdynmc)
+library(plm)
 
-
+# fristly, let's plot the DAG that will be simulated
 lag_treatment <- ggdag::dagify(y2 ~ y1,
                          w1 ~ y1,
                          w1 ~ x1,
                          x2 ~ x1,
                          y2 ~w1,
+                         y2 ~ x1
                          )
 
 ggdag::ggdag(lag_treatment)
@@ -21,13 +22,16 @@ ggdag::ggdag(lag_treatment)
 # simulates from DAG- 30 periods
 
 set.seed(1234)
-n <- 200
-beta <- c(.5, .5, 1.5, -1.5, 1.5)
+n <- 1000
+beta <- c(.5, .5, .5, .5, .5, 2) # direct effect of x_t-1 on y is 2. All other effects are .5.
 
-causalx <- function(n = 200, beta = c(.5, .5, 1.5, -1.5, 1.5), num_periods = 30) {
-  epsilon <- matrix(rnorm(n*num_periods), nrow = n, ncol = num_periods)
-  delta <- matrix(rnorm(n*num_periods), nrow = n, ncol = num_periods)
-  gamma <- matrix(rnorm(n*num_periods), nrow = n, ncol = num_periods)
+# function to simulate from the above DAG
+causal_sim1 <- function(n = 200, beta = c(.5, .5, .5, .5, .5, 2), num_periods = 30) {
+ 
+  epsilon <- matrix(rnorm(n*num_periods, 0 ,1), nrow = n, ncol = num_periods)
+  delta <- matrix(rnorm(n*num_periods, 0 ,2), nrow = n, ncol = num_periods)
+  gamma <- matrix(rnorm(n*num_periods, 0 ,2), nrow = n, ncol = num_periods)
+  
   x <- matrix(0, nrow = n, ncol = num_periods)
   y <- matrix(0, nrow = n, ncol = num_periods)
   w <- matrix(0, nrow = n, ncol = num_periods)
@@ -39,7 +43,7 @@ causalx <- function(n = 200, beta = c(.5, .5, 1.5, -1.5, 1.5), num_periods = 30)
  
   for ( i in 2:num_periods) {
     x[,i] <- x[,i-1]*beta[1] + epsilon[,i]
-    y[,i] <- y[,i-1]*beta[2] + w[,i-1]*beta[3]  + gamma[,i]
+    y[,i] <- y[,i-1]*beta[2] + w[,i-1]*beta[3]  + x[,i-1]*beta[6] +  gamma[,i]
     w[,i] <- x[,i]*beta[4] + y[,i]*beta[5] + delta[,i]
   }
   
@@ -70,10 +74,22 @@ causalx <- function(n = 200, beta = c(.5, .5, 1.5, -1.5, 1.5), num_periods = 30)
   return(df)
 }
 
+df <- causal_sim1(beta= beta)
+
+# now, showing that the direct effect of x on y is not identified (should be 2)
 reg <- lm(y ~ x, data=df)
 summary(reg)
 
+reg <- lm(y ~ w_lag, data=df)
+summary(reg)
+
+reg <- lm(y ~ x + x_lag + w_lag, data=df)
+summary(reg)
+
 reg <- lm(y ~ x_lag, data=df)
+summary(reg)
+
+reg <- lm(y ~ x + x_lag, data=df)
 summary(reg)
 
 reg <- lm(y ~ x_lag + w_lag, data=df)
@@ -82,24 +98,39 @@ summary(reg)
 reg <- lm(y ~ x_lag  + y_lag, data=df)
 summary(reg)
 
+reg <- lm(y ~ x_lag  + y_lag + w_lag, data=df)
+summary(reg) ## why NA? Why perfectly correlated?
+
+# it does not make any difference using fixed effects
 reg <- feols(y ~ x_lag + w_lag | id + period, data=df)
 summary(reg)
 
-beta1 <- 2
-beta2 <- 1.5
-beta3 <- -1
-beta4 <- -1.5
-beta5 <- -2
-x0 <- rnorm(n)
-y0 <- rnorm(n)
-x2 <- beta1*x1 + rnorm(n)
-w1 <- beta2*x1 + beta3*y1 + rnorm(n)
-y2 <- beta4*y1 + beta5*w1
-w0 <- 
-
-df <- data.frame(x1 = x1, x2 = x2, w1 = w1, y1 = y1, y2 = y2)
-
-reg <- lm(y2 ~ x2, data=df)
+reg <- feols(y ~ x_lag + w_lag + y_lag| id + period, data=df)
 summary(reg)
 
+reg <- lm(y ~ x_lag  + w_lag, data= subset(df, period == 2))
+summary(reg)
 
+reg <- lm(y ~ x_lag , data= subset(df, period == 3))
+summary(reg)
+
+reg <- lm(y ~ x_lag +w_lag, data= subset(df, period == 3))
+summary(reg)
+
+reg <- pdynmc(dat = df, varname.i = "id", varname.t = "period",
+              use.mc.diff = TRUE, use.mc.lev = FALSE, use.mc.nonlin = FALSE,
+              include.y = TRUE, varname.y = "y", lagTerms.y = 1,
+              fur.con = TRUE, fur.con.diff = TRUE, fur.con.lev = FALSE,
+              varname.reg.fur = c("x", "w"), lagTerms.reg.fur = c(1,1),
+              w.mat = "iid.err", std.err = "corrected", estimation = "onestep",
+              opt.meth = "none")
+
+summary(reg)
+
+panel_one_step_gmm <- pgmm(y ~  x + w | lag(y, 2) + lag(x, 2), lag.form(1, 1, 1),
+                           data = df,
+                           transformation = 'd',
+                           model = 'onestep',
+                           effect = 'individual', lag.gmm = list(c(2,3)))
+
+summary(panel_one_step_gmm)
