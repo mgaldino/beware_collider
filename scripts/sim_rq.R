@@ -18,8 +18,10 @@ lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
 
 ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
 
+## Monte Carlo Simuation
 
-### Generalization ofr 10 periods
+### Dynamic panel model
+
 estimate <- numeric()
 estimate1 <- numeric()
 estimate2 <- numeric()
@@ -105,7 +107,7 @@ df_sim1 %>%
          upper = coef1 + 2*std_error1) %>%
   summarise(int_95 = sum(abs(lower < 5 & upper > 5))/n())
 
-# sim. Deu 95,2%
+# Yep  95,2%
 
 set.seed(34)
 df_plot <- df_sim1 %>%
@@ -143,7 +145,7 @@ ggsave(p4, filename = "coef_sim_homg_effect.png", scale= .8)
 
 
 ##################33
-## Collider bias? #
+## Fo]reign Collider bias #
 #################3##
 
 estimate <- numeric()
@@ -237,6 +239,13 @@ for (i in 1:1000) {
 
 df_sim1 <- data.frame(iteration = 1:1000, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
+
+df_sim1 %>%
+  mutate(lower = coef2 - 2*std_error2,
+         upper = coef2 + 2*std_error2) %>%
+  summarise(int_95 = sum(abs(lower < 5 & upper > 5))/n())
+
+# 95.7%
 
 set.seed(34)
 df_plot <- df_sim1 %>%
