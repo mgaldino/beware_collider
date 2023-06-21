@@ -5,9 +5,7 @@ library(ggdag)
 library(arm)
 library(tidyr)
 library(tidyverse)
-# library(statar)
 library(fixest)
-# library(pdynmc)
 library(plm)
 
 # fristly, let's plot the DAG that will be simulated
@@ -20,190 +18,6 @@ lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
 
 ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
 
-n <- 1000
-time <- 10
-# init variables
-cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-incomepc0 <- 1000*exp(rnorm(n)) # log normal
-
-# period 0 variables
-pchange0 <- rbinom(n, 1, p=invlogit(-.01*incompe0 + rnorm(n, 0, 10)))
-
-# period 1 variables
-incomepc1 <- incompe0 + incompe0*runif(n, .95, 1.1)
-pchange1 <- rbinom(n, 1, p=invlogit(-.01*incomepc1 + 10*pchange0 + rnorm(n, 0, 10)))
-cw1 <- 5 + cw0 + 5*pchange0 - 1.1*log(incomepc0) + rnorm(n, 0, 3)
-
-# period 2
-cw2 <- 5 + cw1 + 5*pchange1 - 1.1*log(incomepc1) + rnorm(n, 0, 3)
-
-df <- data.frame(cw = c(cw2, cw1), pchange = c(pchange0, pchange1), 
-                 incomepc = c(incomepc0, incomepc1), period = rep(1:2, each= n), id = 1:n)
-
-df <- df %>%
-  mutate(cw_new = cw)
-summary(df)
-reg <- lm(cw ~ pchange + log(incomepc), df)
-summary(reg)
-
-# tratamento heterogêneo
-# fristly, let's plot the DAG that will be simulated
-lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
-                               cw1 ~ cw0 + pchange0 + incomepc0,
-                               pchange1 ~ pchange0 + incomepc1,
-                               incomepc1 ~ incomepc0,
-                               pchange0 ~ incomepc0
-)
-
-ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
-
-estimate <- 0
-std_error <- 0
-# simulando 100 ordens diferentes de tratamento
-
-for (i in 1:100) {
-  n <- 1000
-  time <- 10
-  # init variables
-  cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-  incomepc0 <- 1000*exp(rnorm(n)) # log normal
-  
-  # period 0 variables
-  pchange0 <- rbinom(n, 1, p=invlogit(-.01*incompe0 + rnorm(n, 0, 10)))
-  
-  # period 1 variables
-  incomepc1 <- incompe0 + incompe0*runif(n, .95, 1.1)
-  pchange1 <- rbinom(n, 1, p=invlogit(-.01*incomepc1 + 10*pchange0 + rnorm(n, 0, 10)))
-  cw1 <- 5 + cw0 + 5*pchange0 - 1.1*log(incomepc0) + rnorm(n, 0, 3)
-  
-  # period 2
-  cw2 <- 5 + cw1 + 2.5*pchange1 - 1.1*log(incomepc1) + rnorm(n, 0, 3)
-  
-  df <- data.frame(cw = c(cw2, cw1), pchange = c(pchange0, pchange1), 
-                   incomepc = c(incomepc0, incomepc1), period = rep(1:2, each= n), id = 1:n)
-  
-  summary(df)
-  
-  reg <- lm(cw ~ pchange + log(incomepc), df)
-  
-  summary(reg)
-  estimate[i] <- coef(reg)[2]
-  std_error[i] <- sqrt(diag(vcov(reg)))[2]
-  print(i)
-  
-}
-
-df_sim <- data.frame(iteration = 1:100, coef = estimate,std_error = std_error )
-library(ggplot2)
-library(tidyverse)
-
-library(ggplot2)
-
-p <- df_sim %>%
-  ggplot(aes(x = iteration, y = coef)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef - std_error, ymax = coef + std_error), width = 0.2) +
-  labs(x = "Iteration", y = "Coefficient Estimate") + 
-  theme_bw() +
-  ggtitle("Regression Coefficient Estimates with Error Bars")
-  
-ggsave(p, filename = "coef_sim_het_effect.png")
-
-
-## RQ homogêneo
-estimate <- 0
-std_error <- 0
-for (i in 1:100) {
-  n <- 10000
-  time <- 10
-  # init variables
-  cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-  incomepc0 <- 1000*exp(rnorm(n)) # log normal
-  
-  # period 0 variables
-  pchange0 <- rbinom(n, 1, p=invlogit(-.01*incompe0 + rnorm(n, 0, 10)))
-  
-  # period 1 variables
-  incomepc1 <- incompe0 + incompe0*runif(n, .95, 1.1)
-  pchange1 <- rbinom(n, 1, p=invlogit(-.01*incomepc1 + 10*pchange0 + rnorm(n, 0, 10)))
-  cw1 <- 5 + cw0 + 5*pchange0 - 1.1*log(incomepc0) + rnorm(n, 0, 3)
-  
-  # period 2
-  cw2 <- 5 + cw1 + 5*pchange1 - 1.1*log(incomepc1) + rnorm(n, 0, 3)
-  
-  df <- data.frame(cw = c(cw2, cw1), pchange = c(pchange0, pchange1), 
-                   incomepc = c(incomepc0, incomepc1), period = rep(1:2, each= n), id = 1:n)
-  
-  summary(df)
-  reg <- lm(cw ~ pchange + log(incomepc), df)
-  summary(reg)
-  estimate[i] <- coef(reg)[2]
-  std_error[i] <- sqrt(diag(vcov(reg)))[2]
-  print(i)
-}
-
-df_sim <- data.frame(iteration = 1:100, coef = estimate,std_error = std_error )
-
-p1 <- df_sim %>%
-  ggplot(aes(x = iteration, y = coef)) +
-  geom_point() + geom_smooth(method="lm") +
-  ylim(0,6) +
-  geom_errorbar(aes(ymin = coef - std_error, ymax = coef + std_error), width = 0.2) +
-  labs(x = "Iteration", y = "Coefficient Estimate") + 
-  geom_hline(yintercept = 5) +
-  theme_bw() +
-  ggtitle("Regression Coefficient Estimates with Error Bars")
-p1
-ggsave(p1, filename = "coef_sim_homog_effect.png")
-
-
-## RQ 2 versus 0
-
-for (i in 1:100) {
-  n <- 1000
-  time <- 10
-  # init variables
-  cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-  incomepc0 <- 1000*exp(rnorm(n)) # log normal
-  
-  # period 0 variables
-  pchange0 <- rbinom(n, 1, p=invlogit(-.01*incompe0 + rnorm(n, 0, 10)))
-  
-  # period 1 variables
-  incomepc1 <- incompe0 + incompe0*runif(n, .95, 1.1)
-  pchange1 <- rbinom(n, 1, p=invlogit(-.01*incomepc1 + 10*pchange0 + rnorm(n, 0, 10)))
-  cw1 <- 5 + cw0 + 5*pchange0 - 1.1*log(incomepc0) + rnorm(n, 0, 3)
-  
-  # period 2
-  cw2 <- 5 + cw1 + 2.5*pchange1 - 1.1*log(incomepc1) + rnorm(n, 0, 3)
-  
-  df <- data.frame(cw = c(cw2, cw1), pchange = c(pchange0, pchange1), 
-                   incomepc = c(incomepc0, incomepc1), period = rep(1:2, each= n), id = 1:n)
-  
-
-  df <- df %>%
-    group_by(id) %>%
-    mutate(somapol = sum(pchange)) %>%
-    filter(somapol > 1 | somapol < 1)
-  
-  reg <- lm(cw ~ pchange + log(incomepc), df)
-  summary(reg)
-  estimate[i] <- coef(reg)[2]
-  std_error[i] <- sqrt(diag(vcov(reg)))[2]
-  print(i)
-}
-
-df_sim1 <- data.frame(iteration = 1:100, coef = estimate,std_error = std_error )
-
-p2 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef - std_error, ymax = coef + std_error), width = 0.2) +
-  labs(x = "Iteration", y = "Coefficient Estimate") + 
-  theme_bw() +
-  ggtitle("Regression Coefficient Estimates with Error Bars")
-
-ggsave(p2, filename = "coef_sim_het_effect.png")
 
 ### Generalization ofr 10 periods
 estimate <- numeric()
@@ -216,21 +30,22 @@ std_error1 <- numeric()
 std_error2 <- numeric()
 std_error3 <- numeric()
 
-for (i in 1:100) {
+set.seed(1234)
+for (i in 1:1000) {
   n <- 1000
   time <- 10
 # init variables
 
 cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-incomepc0 <- 1000*exp(rnorm(n)) # log normal
+incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
 
 # creates vector of variables and initialize pchange0
-pchange0<- rbinom(n, 1, p=invlogit(-.8*log(incompe0) + rnorm(n, 0, 10))) 
+pchange0<- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
 incomepc <- numeric()
 cw <- numeric()
 pchange <- numeric()
 # period 1 variables
-incomepc <- append(incomepc0, incompe0*runif(n, .95, 1.1))
+incomepc <- append(incomepc0, incomepc0*runif(n, .95, 1.1))
 pchange <- append(pchange0, rbinom(n, 1, p=invlogit(-.8*log(incomepc[1001:2000]) + 10*pchange0 + rnorm(n, 0, 8))))
 cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + rnorm(n, 0, 2))
 
@@ -278,31 +93,53 @@ std_error[i] <- se(reg)[2]
 std_error1[i] <- se(reg1)[2]
 std_error2[i] <- se(reg_fe)[2]
 std_error3[i] <- se(reg_fe1)[2]
-print(i)
+if( i %% 10 == 0) print(i)
 }
 
-df_sim1 <- data.frame(iteration = 1:100, coef1 = estimate, coef2 = estimate1,
+df_sim1 <- data.frame(iteration = 1:1000, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
-p3 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef1)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef1 - std_error1, ymax = coef1 + std_error1), width = 0.2) +
+# Does 95% percent of IC contain the true value?
+df_sim1 %>%
+  mutate(lower = coef1 - 2*std_error1,
+         upper = coef1 + 2*std_error1) %>%
+  summarise(int_95 = sum(abs(lower < 5 & upper > 5))/n())
+
+# sim. Deu 95,2%
+
+set.seed(34)
+df_plot <- df_sim1 %>%
+  sample_n(size = 100)
+
+p3 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef1)) +
+  geom_hline(yintercept = 5, colour = "red") +
+  geom_hline(aes(yintercept = mean(coef1)), colour = "blue", linetype='dotted') +
+  geom_errorbar(aes(ymin = coef1 - 1.96*std_error1, ymax = coef1 + 1.96*std_error1), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") +
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
-  ggtitle("Regression estimate of Political Change \n cw ~ pol_change + income + lag cw")
+  ylim(4.75, 5.25) +
+  ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag + cw_lag")
 
-p4 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef2)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef2 - std_error2, ymax = coef2 + std_error2), width = 0.2) +
+p3
+  ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png", scale = .8)
+
+p4 <-  df_plot %>%
+  ggplot(aes(x = 1:100, y = coef2)) +
+  geom_point() +
+  geom_hline(yintercept = 5, colour = "red", linetype='dotted') +
+  geom_hline(aes(yintercept = mean(coef2)), colour = "blue") + 
+  geom_errorbar(aes(ymin = coef2 - 1.96*std_error2, ymax = coef2 + 1.96*std_error2), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") + 
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
-  ggtitle("Regression estimate of Political Change - cw ~ pol_change + income")
+  ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag")
 
-ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png")
+p4
 
-ggsave(p4, filename = "coef_sim_homg_effect.png")
+
+ggsave(p4, filename = "coef_sim_homg_effect.png", scale= .8)
 
 ##################33
 ## Collider bias? #
@@ -318,21 +155,24 @@ std_error1 <- numeric()
 std_error2 <- numeric()
 std_error3 <- numeric()
 
-for (i in 1:100) {
-  n <- 1000
-  time <- 10
+set.seed(123)
+n <- 1000
+time <- 10
+
+for (i in 1:1000) {
+
   # init variables
   
   cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-  incomepc0 <- 1000*exp(rnorm(n)) # log normal
+  incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
   
   # creates vector of variables and initialize pchange0
-  pchange0<- rbinom(n, 1, p=invlogit(-.8*log(incompe0) + rnorm(n, 0, 10))) 
+  pchange0<- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
   incomepc <- numeric()
   cw <- numeric()
   pchange <- numeric()
   # period 1 variables
-  incomepc <- append(incomepc0, incompe0*runif(n, .95, 1.1) - .2*cw0 )
+  incomepc <- append(incomepc0, incomepc0*runif(n, .95, 1.1) - .2*cw0 )
   pchange <- append(pchange0, rbinom(n, 1, p=invlogit(-.8*log(incomepc[1001:2000]) + 10*pchange0 + rnorm(n, 0, 8))))
   cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + rnorm(n, 0, 2))
   
@@ -357,7 +197,6 @@ for (i in 1:100) {
            lag_log_income = dplyr::lag(log_income, order_by = period)) %>%
     dplyr::filter(period != 1)
   
-  
   reg <- feols(cw ~ lag_pchange + lag_log_income + lag_cw, data = df)
   summary(reg)
   
@@ -380,31 +219,43 @@ for (i in 1:100) {
   std_error1[i] <- se(reg1)[2]
   std_error2[i] <- se(reg_fe)[2]
   std_error3[i] <- se(reg_fe1)[2]
-  print(i)
+  
+  if (i %% 10 == 0) print(i)
+
 }
 
 df_sim1 <- data.frame(iteration = 1:100, coef1 = estimate, coef2 = estimate1,
-                      std_error1 = std_error, std_error2 = std_error1 )
+                      std_error1 = std_error, std_error2 = std_error1)
 
-p3 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef1)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef1 - std_error1, ymax = coef1 + std_error1), width = 0.2) +
+set.seed(34)
+df_plot <- df_sim1 %>%
+  sample_n(size = 100)
+
+p3 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef1)) +
+  geom_hline(yintercept = 5, colour = "red") +
+  geom_hline(aes(yintercept = mean(coef1)), colour = "blue", linetype='dotted') +
+  geom_errorbar(aes(ymin = coef1 - 1.96*std_error1, ymax = coef1 + 1.96*std_error1), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") +
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
-  ggtitle("Regression estimate of Political Change \n cw ~ pol_change + income + lag cw")
+  ylim(4.75, 5.25) +
+  ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag + cw_lag")
 
 p3
+ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png", scale=.8)
 
-p4 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef2)) +
+
+
+p4 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef2)) +
   geom_point() + geom_smooth(method="lm") +
   geom_errorbar(aes(ymin = coef2 - std_error2, ymax = coef2 + std_error2), width = 0.2) +
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
   ggtitle("Regression estimate of Political Change - cw ~ pol_change + income")
 
-ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png")
+
 
 ggsave(p4, filename = "coef_sim_homg_effect.png")
 
