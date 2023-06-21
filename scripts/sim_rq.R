@@ -141,12 +141,6 @@ p4
 
 ggsave(p4, filename = "coef_sim_homg_effect.png", scale= .8)
 
-##################33
-## Collider bias? #
-#################3##
-
-
-
 
 ##################33
 ## Collider bias? #
@@ -162,18 +156,19 @@ std_error1 <- numeric()
 std_error2 <- numeric()
 std_error3 <- numeric()
 
-for (i in 1:100) {
+set.seed(1234)
+for (i in 1:1000) {
   n <- 1000
   time <- 10
   # init variables
   
   cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
-  incomepc0 <- 1000*exp(rnorm(n)) # log normal
+  incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
   democracy0 <- rnorm(n)
   u0 <- rnorm(n)
   
   # creates vector of variables and initialize pchange0
-  pchange0 <- rbinom(n, 1, p=invlogit(-.8*log(incompe0) + rnorm(n, 0, 10))) 
+  pchange0 <- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
   incomepc <- numeric()
   cw <- numeric()
   pchange <- numeric()
@@ -182,7 +177,7 @@ for (i in 1:100) {
   
   # period 1 variables
   
-  incomepc <- append(incomepc0, incompe0*runif(n, .95, 1.1) - .2*cw0 )
+  incomepc <- append(incomepc0, incomepc0*runif(n, .95, 1.1) - .2*cw0 )
   pchange <- append(pchange0, rbinom(n, 1, p=invlogit(-.8*log(incomepc[1001:2000]) + 10*pchange0 + rnorm(n, 0, 8))))
   cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + .3*democracy0 + rnorm(n, 0, 2))
   u <- append(u0, pchange + rnorm(n))
@@ -236,32 +231,41 @@ for (i in 1:100) {
   std_error1[i] <- se(reg1)[2]
   std_error2[i] <- se(reg_fe)[2]
   std_error3[i] <- se(reg_fe1)[2]
-  print(i)
+  
+  if ( i %% 10 == 0) print(i)
 }
 
-df_sim1 <- data.frame(iteration = 1:100, coef1 = estimate, coef2 = estimate1,
+df_sim1 <- data.frame(iteration = 1:1000, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
-p5 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef1)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef1 - std_error1, ymax = coef1 + std_error1), width = 0.2) +
+set.seed(34)
+df_plot <- df_sim1 %>%
+  sample_n(size = 100)
+
+p5 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef1)) +
+  geom_hline(aes(yintercept = mean(coef1)), colour = "blue", linetype='dotted') +
+  geom_errorbar(aes(ymin = coef1 - 1.96*std_error1, ymax = coef1 + 1.96*std_error1), width = 0.2) +
+  geom_point( size=2, shape=21, fill="white") +
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
-  ggtitle("Collider bias \n cw ~ pol_change + income + lag cw + democracy_level")
+  ylim(2, 3) +
+  ggtitle("Regression estimate - Collider bias \n cw ~ pol_change_lag + income_lag + cw_lag +  \n democracy_level")
 
 p5
+ggsave(p5, filename = "collider_bias.png", scale = .7)
 
-p6 <- df_sim1 %>%
-  ggplot(aes(x = iteration, y = coef2)) +
-  geom_point() + geom_smooth(method="lm") +
-  geom_errorbar(aes(ymin = coef2 - std_error2, ymax = coef2 + std_error2), width = 0.2) +
+p6 <-  df_plot %>%
+  ggplot(aes(x = 1:100, y = coef2)) +
+  geom_point() +
+  geom_hline(yintercept = 5, colour = "red", linetype='dotted') +
+  geom_hline(aes(yintercept = mean(coef2)), colour = "blue") + 
+  geom_errorbar(aes(ymin = coef2 - 1.96*std_error2, ymax = coef2 + 1.96*std_error2), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") + 
   labs(x = "Iteration", y = "Coefficient Estimate") + 
   theme_bw() +
-  ggtitle("No collider bias \n cw ~ pol_change + income + lag cw")
+  ggtitle("No collider bias \n cw ~ pol_change_lag + income_lag + cw_lag")
 
 p6
 
-ggsave(p5, filename = "collider_bias.png")
-
-ggsave(p6, filename = "cno_collider_bias.png")
+ggsave(p6, filename = "no_collider_bias.png",  scale = .8)
