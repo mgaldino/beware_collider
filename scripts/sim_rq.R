@@ -38,9 +38,9 @@ std_error3 <- numeric()
 set.seed(1234)
 
 # loop for MC simulation
-# k iterations
-k <- 1000
-for (i in 1:k) {
+# m iterations
+m <- 1000
+for (i in 1:m) {
   n <- 1000
   time <- 10
 # init variables
@@ -106,7 +106,7 @@ if( i %% 10 == 0) print(i)
 }
 
 # creating data frame to store variables of MC simulation
-df_sim1 <- data.frame(iteration = 1:k, coef1 = estimate, coef2 = estimate1,
+df_sim1 <- data.frame(iteration = 1:m, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
 # Does 95% percent of IC contain the true value?
@@ -173,24 +173,28 @@ std_error1 <- numeric()
 std_error2 <- numeric()
 std_error3 <- numeric()
 
+m <- 1000
 set.seed(1234)
-for (i in 1:k) {
-  n <- 1000
-  time <- 10
+for (i in 1:m) {
+  n <- 1000 # number of countries
+  time <- 10 # number of periods in the regression
   # init variables
   
+  # we will initiate uncaused variables in the period 0.
   cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
   incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
   democracy0 <- rnorm(n)
   u0 <- rnorm(n)
   
-  # creates vector of variables and initialize pchange0
+  # initialize pchange0 - political change
   pchange0 <- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
+  
+  # creating vector of variables and 
   incomepc <- numeric()
   cw <- numeric()
   pchange <- numeric()
   democracy <- numeric()
-  u0 <- numeric()
+  u <- numeric()
   
   # period 1 variables
   
@@ -199,9 +203,8 @@ for (i in 1:k) {
   cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + .3*democracy0 + rnorm(n, 0, 2))
   u <- append(u0, pchange + rnorm(n))
   democracy <- append(democracy0, u[1001:2000] - cw[1001:2000] + rnorm(n))
-  # 5 + cw0[1] + 5*pchange0[1] - .5*log(incomepc0[1]) + rnorm(1, 0, 3)
-  # 5 + cw0[2] + 5*pchange0[2] - .5*log(incomepc0[2]) + rnorm(1, 0, 3)
-  
+
+  # all other periods
   lag_index <- 1:n
   for ( k in 1:time) {
     incomepc <- append(incomepc,  incomepc[lag_index + n*k]*runif(n, .95, 1.1) - .2*cw[lag_index + n*k])
@@ -225,7 +228,7 @@ for (i in 1:k) {
            lag_democracy = dplyr::lag(democracy, order_by=period),) %>%
     dplyr::filter(period != 1)
   
-  
+  # fit regressions
   reg <- feols(cw ~ lag_pchange + lag_log_income + lag_cw + democracy, data = df)
   summary(reg)
   
@@ -238,21 +241,23 @@ for (i in 1:k) {
   reg_fe1 <- feols(cw ~ lag_pchange + lag_log_income  | id + period , data = df)
   summary(reg_fe1)
   
-  
+  # store coef
   estimate[i] <- coef(reg)[2]
   estimate1[i] <- coef(reg1)[2]
   estimate2[i] <- coef(reg_fe)[2]
   estimate3[i] <- coef(reg_fe1)[2]
   
+  #store se
   std_error[i] <- se(reg)[2]
   std_error1[i] <- se(reg1)[2]
   std_error2[i] <- se(reg_fe)[2]
   std_error3[i] <- se(reg_fe1)[2]
   
+  # monitor loop by print every ten iterations
   if ( i %% 10 == 0) print(i)
 }
 
-df_sim1 <- data.frame(iteration = 1:k, coef1 = estimate, coef2 = estimate1,
+df_sim1 <- data.frame(iteration = 1:m, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
 df_sim1 %>%
