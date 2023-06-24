@@ -1,6 +1,6 @@
-## sim RQ
+## Simularions for dynamics models and foreign collider bias
 
-
+# loading packages
 library(ggdag)
 library(arm)
 library(tidyr)
@@ -18,22 +18,29 @@ lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
 
 ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
 
-## Monte Carlo Simuation
+## Monte Carlo Simulation
 
+##############3########
 ### Dynamic panel model
 
+# variables where we will save regession coef estimates
 estimate <- numeric()
 estimate1 <- numeric()
 estimate2 <- numeric()
 estimate3 <- numeric()
 
+# variables where we ill save regressio ncoef se 
 std_error <- numeric()
 std_error1 <- numeric()
 std_error2 <- numeric()
 std_error3 <- numeric()
 
 set.seed(1234)
-for (i in 1:1000) {
+
+# loop for MC simulation
+# k iterations
+k <- 1000
+for (i in 1:k) {
   n <- 1000
   time <- 10
 # init variables
@@ -98,7 +105,8 @@ std_error3[i] <- se(reg_fe1)[2]
 if( i %% 10 == 0) print(i)
 }
 
-df_sim1 <- data.frame(iteration = 1:1000, coef1 = estimate, coef2 = estimate1,
+# creating data frame to store variables of MC simulation
+df_sim1 <- data.frame(iteration = 1:k, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
 # Does 95% percent of IC contain the true value?
@@ -109,10 +117,15 @@ df_sim1 %>%
 
 # Yep  95,2%
 
+# plotting ppaer graphics
+
 set.seed(34)
+# selecting 100 obs of k simulations
+# otherwise the graph is too polluted
 df_plot <- df_sim1 %>%
   sample_n(size = 100)
 
+# first plot - with lagged DV
 p3 <- df_plot %>%
   ggplot(aes(x = 1:100, y = coef1)) +
   geom_hline(yintercept = 5, colour = "red") +
@@ -125,8 +138,10 @@ p3 <- df_plot %>%
   ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag + cw_lag")
 
 p3
-  ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png", scale = .8)
 
+ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png", scale = .8)
+
+  # second plot, withou lagged DV
 p4 <-  df_plot %>%
   ggplot(aes(x = 1:100, y = coef2)) +
   geom_point() +
@@ -159,7 +174,7 @@ std_error2 <- numeric()
 std_error3 <- numeric()
 
 set.seed(1234)
-for (i in 1:1000) {
+for (i in 1:k) {
   n <- 1000
   time <- 10
   # init variables
@@ -237,7 +252,7 @@ for (i in 1:1000) {
   if ( i %% 10 == 0) print(i)
 }
 
-df_sim1 <- data.frame(iteration = 1:1000, coef1 = estimate, coef2 = estimate1,
+df_sim1 <- data.frame(iteration = 1:k, coef1 = estimate, coef2 = estimate1,
                       std_error1 = std_error, std_error2 = std_error1 )
 
 df_sim1 %>%
