@@ -1,0 +1,135 @@
+---
+title: Back to the Future bias
+subtitle: Collider bias in TSCS studies
+author:
+  - name: Manoel Galdino
+    email: mgaldino@usp.br
+    affiliations: 
+        - id: some-tech
+          name: University of São Paulo
+          department: Political Science
+          city: São Paulo
+          state: São Paulo
+    attributes:
+        corresponding: true
+    note: This is the first author footnote.
+  - name: Davi Moreira
+    email: davi.moreira@gmail.com
+    affiliations:
+        - id: another-u
+          name: Emory University
+          department: Political Science
+          city: Atlatna
+          state: Georgia
+    note: We would like Fernando Limongi, Lorena Barberia, Umberto Mignozetti and participants at the Political Science graduate seminar at University of São Paulo and the Polmeth Latam session participants.
+  - name: Carolina Dolleans
+    email: cat@example.com
+    affiliations:
+        name: Universidade Federal de Pernambuco
+        department: Political Science
+    note: Yet another author footnote.
+abstract: |
+  Current applied Time Series Cross Section (TSCS) regressions analysis aimed at identifying a causal effect is not aware that standard practice of controls inclusion can introduce what we call back to the future bias. In the present paper, we develop a tipoligy for current heuristics for control inclusion and show that they can inadvertently introduce a collider variable in the context of TSCS data that may bias the result (back to the future bias). A review of a sample of applied TSCS papers shows that this is a prevalent problem in the political science and international relations literature. To address this matter, we present  an improved heuristic to build a DAG that properly controls for the correct variables in the context of TSCS data analysis and avoid the back to the future bias. Monte Carlo simulation shows that it works well in finite samples.
+
+keywords: 
+  - Time Series Cross Section
+  - Collider
+  - DAG
+date: last-modified
+bibliography: bibliography.bib
+format:
+  elsevier-pdf:
+    keep-tex: true
+    journal:
+      name: Political Analysis
+      formatting: preprint
+      model: 3p
+      cite-style: super
+---
+
+# Introduction
+
+The analysis of Time Series Cross Section (TSCS) data plays a crucial role in current research practices within political science, particularly in the fields of International Relations and Comparative Politics. TSCS data offer a powerful combination of spatial and temporal features, making them valuable for empirical analysis.
+
+
+
+![DAg civil war dynamic](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\pol change civil war dynamic.png)
+
+
+
+
+Let us return to our previous example of political change and civil war. Suppose, like Hegre et al. (2001), one wants to add other controls to a regression, such as democracy level. The DAG now is as follows:
+
+![DAg civil war with new control](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\democracy_control.png)
+
+
+
+Let's say that after a civil war onset, the democracy level of the country will likely decrease. In our DAG, this means there is a missing arrow from current civil war nodes to current democracy levels nodes. This is know as potential reverse causality, which is dealt with by lagging the control. Thus. we need to add this arrow and the DAG is now described by the following graph:
+
+![DAg civil war wit inclusion of missing arrowl](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\democracy_control_missing_arrow.png)
+
+## step 2 of back to the future bias -- treatment as cause of control z
+
+In step 2, the researcher should look at the literature on the causes of democracy levels. In standard research practice, this never happens, because according to both control check and confounding checking heuristics, there is no need to review the literature for potential causes of the controls included in the regression and include them also in the regression. We call it foreign literature review, because is a review of literature not directed related to the research question at hand, but not another (foreign) research question (that causes a control?). In any case, let's say she does that and she finds that the treatment of current research, politcal change, is a cause of democracy levels, mediated by another variable, not observed in the current study, $U$. The new DAG reflecting this potential causal channel is as below:
+
+![back to the future bias - civil war DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\foreign collider bias civil war.png)
+
+
+
+![back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png)
+
+
+# Tables coming from R
+
+Tables can also be generated using R chunks, as shown in @tbl-simple example.
+
+```{r}
+#| label: tbl-simple
+#| tbl-cap: Caption centered above table
+#| echo: true
+knitr::kable(head(mtcars)[,1:4])
+```
+
+
+# Equations
+
+Here is an equation:
+$$ 
+  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
+  \left(\frac{x}{\beta}\right)^{\alpha-1}
+  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
+  \alpha,\beta,x > 0 .
+$$
+
+Inline equations work as well: $\sum_{i = 2}^\infty\{\alpha_i^\beta\}$
+
+
+Please make sure that your manuscript follows the guidelines in the 
+Guide for Authors of the relevant journal. It is not necessary to 
+typeset your manuscript in exactly the same way as an article, 
+unless you are submitting to a camera-ready copy (CRC) journal.
+
+For detailed instructions regarding the elsevier article class, see   <https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions>
+
+# Bibliography styles
+
+Here are two sample references:  @Feynman1963118 @Dirac1953888.
+
+By default, natbib will be used with the `authoryear` style, set in `classoption` variable in YAML. 
+You can sets extra options with `natbiboptions` variable in YAML header. Example 
+
+```
+natbiboptions: longnamesfirst,angle,semicolon
+```
+
+There are various more specific bibliography styles available at
+<https://support.stmdocs.in/wiki/index.php?title=Model-wise_bibliographic_style_files>. 
+To use one of these, add it in the header using, for example, `biblio-style: model1-num-names`.
+
+## Using CSL 
+
+If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded
+and stored locally, or the url can be used as in the example header.
+
+
+# References {-}

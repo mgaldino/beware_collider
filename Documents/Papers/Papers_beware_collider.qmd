@@ -1,0 +1,608 @@
+---
+title: Back to the Future bias
+subtitle: Collider bias in TSCS studies
+author:
+  - name: Manoel Galdino
+    email: mgaldino@usp.br
+    affiliations: 
+        - id: some-tech
+          name: University of São Paulo
+          department: Political Science
+          city: São Paulo
+          state: São Paulo
+    attributes:
+        corresponding: true
+    note: This is the first author footnote.
+  - name: Davi Moreira
+    email: davi.moreira@gmail.com
+    affiliations:
+        - id: another-u
+          name: Emory University
+          department: Political Science
+          city: Atlatna
+          state: Georgia
+    note: We would like Fernando Limongi, Lorena Barberia, Umberto Mignozetti and participants at the Political Science graduate seminar at University of São Paulo and the Polmeth Latam session participants.
+  - name: Carolina Dolleans
+    email: cat@example.com
+    affiliations:
+        name: Universidade Federal de Pernambuco
+        department: Political Science
+    note: Yet another author footnote.
+abstract: |
+  Current applied Time Series Cross Section (TSCS) regressions analysis aimed at identifying a causal effect is not aware that standard practice of controls inclusion can introduce what we call back to the future bias. In the present paper, we develop a tipoligy for current heuristics for control inclusion and show that they can inadvertently introduce a collider variable in the context of TSCS data that may bias the result (back to the future bias). A review of a sample of applied TSCS papers shows that this is a prevalent problem in the political science and international relations literature. To address this matter, we present  an improved heuristic to build a DAG that properly controls for the correct variables in the context of TSCS data analysis and avoid the back to the future bias. Monte Carlo simulation shows that it works well in finite samples.
+
+keywords: 
+  - Time Series Cross Section
+  - Collider
+  - DAG
+date: last-modified
+bibliography: bibliography.bib
+format:
+  elsevier-pdf:
+    keep-tex: true
+    journal:
+      name: Political Analysis
+      formatting: preprint
+      model: 3p
+      cite-style: super
+---
+
+# Introduction
+
+The analysis of Time Series Cross Section (TSCS) data plays a crucial role in current research practices within political science, particularly in the fields of International Relations and Comparative Politics. TSCS data offer a powerful combination of spatial and temporal features, making them valuable for empirical analysis.
+
+Recently, a growing body of literature has discussed the challenges and limitations of analyzing TSCS data from a causal inference perspective. These studies have examined assumptions in fixed effect models (Imai and Kim, 2019), the appropriate use of random effect models (Bell and Jones, 2015; Clark and Linzer, 2015), matching techniques for TSCS data (Imai, Kim, and Wang, 2021), and the potential pitfalls of employing two-way fixed effect models with heterogeneous effects in difference-in-differences models (de Chaisemartin and D'Haultfœuille, 2020; Callaway and Sant'Anna, 2021).
+
+One important aspect that applied researchers need to address in their papers is the selection of control variables when making exogeneity or unconfoundedness assumptions (cf. Imbens, 2004) to identify causal effects. Improper inclusion of controls can introduce biases that prevent the model from being correctly identified and estimating the causal estimand accurately.
+
+By utilizing Directed Acyclic Graphs (DAGs), we can overcome common problems in TSCS regressions related to dynamic panel models and biases resulting from inadvertent inclusion of collider variables as regressors. To the best of our knowledge, this is the first study to focus on how the standard heuristic for selecting control variables can inadvertently introduce collider variables in the context of TSCS data, potentially biasing the results. To fill this gap in the literature, we present an improved heuristic for constructing a DAG that appropriately controls for relevant variables in TSCS data analysis.
+
+The remainder of the paper is organized as follows: First, we review the process by which researchers decide to include variables as controls in regressions. Second, we introduce the fundamental concepts of DAGs and demonstrate their application for correctly identifying causal models in dynamic panels. Third, we discuss the issue of "back to the future bias" in TSCS data and present strategies to mitigate it. In the final section, we provide our concluding remarks.
+
+
+# Controls for Casual Identification
+
+In observational studies, when using regression with a selection on observables strategy to identify a causal effect, including all relevant variables as controls is decisive in order to detect a causal effect. Which variables to include as controls depends primarily on the scientific understanding of which variables are crucial to explain the phenomena of interest.
+
+A second criterion when identifying a causal effect is that the model should be identified, meaning there is no bias in estimating the causal estimand of interest (Cinelli et al., 2021). Thus, it is necessary to assess the identification of the model alongside scientific domain expertise. In practice, most scholars use only some heuristics to decide which controls to include.
+
+
+## Looking for variables causing the outcome - *Control Checking*
+
+
+A standard heuristics is to review the relevant literature to search for potential causal variables of the outcome of interest and include it in the regression as controls. Here is a typical example of such a heuristic from a paper on foreign aid:
+
+"As the previous literature on aid policy maintains, various other factors shape donor decisions about the allocation of aid resources, including other recipient characteristics and nondevelopmental donor goals. I include them as control to provide a fully specified model" (Dietrich, 2016, p.81).
+
+Most of the time researchers do not cite relevant literature backing such heuristic.They just take as given that it is sound. It is possible, however, to find a rationale for it in the fact that this may decrease the unexplained variance in the dependent variable, which improves the precision of the Average Causal Effect (ACE) in finite samples (Hahn, 2004; Pearl, 2013; Cinelli, Forney, & Pearl, 2021). The problem with this explanation is that it alone is not enough to decide if a variable should be a control. As shown by Cinelli, Forney, & Pearl (2021), it is quite possible to include a variable as a control that may decrease precision and induce bias, even if it is causally related to the outcome of interest.
+
+## Looking for confounding variables - *Confounding Checking* 
+
+A similar but slightly better heuristic to identify causal effects is surveying the literature to spot potential confounding variables for which one should control. In econometric parlance, one should avoid omitted variables bias. Here is a typical example of such an approach in a paper on the effect of political regime change on occurrence of civil war:
+
+“Our model does not attempt to present an inclusive theory of civil war, but level of democracy and political change do not provide a complete explanation. Therefore, we identify a number of control variables – Development, Ethnic Heterogeneity, Proximity of Inde-pendence, and International War in Country – whose omission might bias the results for the regime change variable.” (Hegre et. al, 2001, p. 37).
+
+This is a better heuristic for causal inference, because it is focused on diminishing the main source of bias in observational studies, namely, omitted variable bias. In DAG parlance, if one blocks all backdoors by including all appropriate controls, there is no omitted variable bias left. However, and this is one of the key points we make in the present paper, in the context of TSCS, this heuristic does not assess if they are inadvertently introducing a collider variable that may bias the causal effect of interest, which is a problem, since the introduction of a collider will bias the causal effect.
+
+## Model based approaches for inclusion of controls - *modeled controls*
+
+Those are the two most common heuristics researchers use to decide which variables to include as controls. A review of *xx* paperspublished in some of the top journals of the profession *[insert note]* shows that $xx%$ of all the papers published in the period 2018-2022 use these two heuristics for inclusion of controls. 
+
+Another possibility is to use formal modeling to develop criteria for including controls. Some authors, such as Heckman (2008), argue that the researcher needs to explicitly model the selection into treatment by agents, which imply to model the controls in a selection on observables strategy. Formally modeling agents' choices is a way to deal with this problem because one can formally assess if the causal effect is identified. However, this may be impossible in practice due to tractability constraints or a lack of precise scientific knowledge on the matter.
+
+Another possible approach is causal discovery (Spirtes & Zhang, 2016;  Glymour et al., 2019; Duart et al., 2021). However, it is based on independence relations found in the data. It thus presupposes that all relevant variables have been included, which is precisely the problem we need to solve in the first place.
+
+## DAG aproache for incusion of controls - *DAG controls*
+
+A third approach is the one Pearl advocated and used in the present paper. The researcher should draw a Directed Acyclic Graph to determine whether the causal impact is identified, notably whether any controls are missing or whether an erroneously included "bad control" actually biases the causal effect. Adopting this approach, she can even think about possible unobservable variables that will be impossible to control in the study, fairly setting the study's limits. To see how it can help, we will introduce the reader to DAGs and provide an example of an application in the context of TSCS.
+
+
+# Preliminaries and Basic Terminology for DAGs
+
+Directed Acyclic Graphs (DAGs) are part of an approach to causal inference that was first developed in the beginning of the 21th century, by Philip Wright (1928) and Sewall Wright (1934). It has become a progressive research program with the work of Judea Pearl and his collaborators (Pearl & Mackenzie, 2018), after which it has been applied in several domains, like epidemiology and computer science and more recently in political science [Pearl & Mackenzie, 2018, Imbens, 2020, Yao et. al., 2021).
+
+All DAGs are composed of three basic structures: chains, forks and colliders (or inverted forks). 
+
+The charts in @fig-basicdag show the three basic structure of a DAG: a fork, a chain and an inverted fork (also called a collider).
+
+```{r basic dags1, message=FALSE, warning=FALSE}
+#| label: fig-basicdag
+#| fig-cap: "Three types of basic DAGs."
+#| fig-subcap:
+#|   - "Fork. Variable z is a common cause of x and y. You should control for it to avoid ommited variable bias"
+#|   - "Chain. Variable x causes z, which causes y. We say that z is a mediator of thecausal effect of x on y. You should not control for z."
+#|   - "Invested-fork. Variable z is a common effect of x and y. Controlling for z opens a backdoor"
+#| layout-ncol: 3
+#| column: page
+#| out-width: 30%
+#| echo: false
+
+library(dagitty)
+library(ggdag)
+library(ggplot2)
+
+#  You should not control for z if you are interested in estimating the effect of x on y. It is a bad control.
+dag_f <- dagitty("dag{y <- z -> x}")
+ggdag(dag_f, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+dag_c <- dagitty("dag{x <- z -> y}")
+ggdag(dag_c, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+
+dag_c <- dagitty("dag{x -> z <- y}")
+ggdag(dag_c, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+```
+
+All of this means that, if you have a fork, then you should control for the common variable to avoid omitted variable bias. In that case, we say that we blocked a backdoor path. If we block all backdoor paths, then there is no omitted variable bias. Caution is needed when there is a mediator. If one is interested in the total effect of a variable (say, $x$, one the middle chart) on another ($y$), then controlling for the mediator ($z$) is wrong, since it will block that specific causal path. If, on the other hand, one is interested only in the direct (unmediated) effect, then one should control for the mediator. Last, but not least, if you are interested in, say, the effect of $x$ on $y$ you should never control for a collider such as $z$ in the right DAG above, since it will create a spurious association between variables (Pearl & Mackenzie, 2018).
+
+We can then reinterpret the heuristic behind the confound checking heuristics -- inclusion of controls to deconfound the estimate. It is trying to block all backdoor paths. However, it says nothing about what one should do if the control is a mediator or a collider. The focus of this paper is in the case of inadvertently including a collider.
+
+# A simple DAG application in the context of TSCS
+
+To motivate the reader on the usefulness of using a DAG, consider a common set up in comparative politics in a very simplified setting. Suppose the researcher is interested in knowing the causal effect of political regime change on civil war, like in Hegre et. al (2001) that we quoted when presenting a heuristic for including controls. Suppose, also, that the only possible (measured) confounder is per capita income (it can cause civil war and also democratization). Thus, to avoid omitted variable bias, the researcher decides to control for per capita income in the regression. Here’s the DAG that represents this situation.
+
+
+```{r basic dags1, message=FALSE, warning=FALSE}
+#| label: fig-dag-model-basic
+#| fig-cap: "Simple model of the effect of poliical change on civil war onset"
+#| echo: false
+
+
+dag_f <- dagitty("dag{Political_Change <- Per_Capita_Income -> Civil_war; Political_Change -> Civil_war }")
+ggdag(dag_f, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+
+
+```
+
+In the context of TSCS data it is standard to index the above variables by $t$. For the sake of simplicity, and without loss of generality, we droped the time tindex by now. Suppose also Suppose that there is concern about reverse causality, or the fact that it is hard to measure when a civil war starts. To circumvent such possibilities and make the results more robust, the researcher decides to lag both per capita income and political change in the regression. 
+
+With such a model in mind and a dataset in the long format, in a software like R, the researcher would run something like lm(civil_war  ~ poli_change_lag + per_cap_income_lag, data=df) for a linear probability model and check if the effect is significant.
+
+The software code and the above DAG are deceptively simple. In fact, they obscure that a dynamic process evolves over time.
+
+Let us unpack what is behind such a dynamic process and how it relates to a research question by considering a DAG over two periods for the outcome variable.
+
+
+![DAg civil war dynamic](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\pol change civil war dynamic.png)
+
+Firstly, in the DAG above, we included arrows from past levels of variables to current ones. Such a setting is likely in the social sciences, where persistence and inertia are the norm. In particular, we know that: per capita income at time t  is correlated with its value at $t +1$, if there was political change in time $t$ it will change the likelihood of another political change in time $t + 1$. So, a more believable DAG should include such arrows.
+
+Secondly, it is not easy to say which variable is the treatment or outcome. In a DAG, both the treatment and the outcome are represented by a single node. In contrast, we have two nodes that are the treatments: political change at time $t -1$  and at time $t$  and three nodes that are the outcomes: civil war at  $t -1$, $t$ and $t +1$.
+
+To circumvent this in the DAG above, consider only period two. Then, the causal effect of interest is political change at t on civil war at $t +1$. In this case, it is easy to see from the DAG above that there are two back-doors opened, both going through civil war lagged. Only a dynamic panel model can recover the actual causal effect.
+
+In this case, whenever there is variation in the treatment effect over time, the causal effect will be estimated with bias, which will depend on the distribution of variations of treatment allocation across countries and time.
+
+We ran a simple simulation based on the above DAG and assumed that civil war is a normal variable to make things easier to interpret. In every iteration of the simulation, we kept everything constant but the error terms and, as a result, who would experience civil war or not in the end. Other than that, every iteration was the same. There are no heterogeneous effects over time. The first chart is based on a model in which only lagged predictors for political change and per capita income were included. The second chart added a lagged dependent variable to the model. The true effect of political change on civil war is $5$.
+
+
+```{r simulation 1, echo=F, message = F, warning = F, cache = TRUE}
+## Simularions for dynamics models and foreign collider bias
+
+# loading packages
+library(ggdag)
+library(arm)
+library(tidyr)
+library(tidyverse)
+library(fixest)
+library(plm)
+
+# fristly, let's plot the DAG that will be simulated
+lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
+                               cw1 ~ cw0 + pchange0 + incomepc0,
+                               pchange1 ~ pchange0 + incomepc1,
+                               incomepc1 ~ incomepc0,
+                               pchange0 ~ incomepc0
+)
+
+ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
+
+## Monte Carlo Simulation
+
+######################
+### Dynamic panel model
+
+# variables where we will save regession coef estimates
+estimate <- numeric()
+estimate1 <- numeric()
+estimate2 <- numeric()
+estimate3 <- numeric()
+
+# variables where we ill save regression coef se 
+
+std_error <- numeric()
+std_error1 <- numeric()
+std_error2 <- numeric()
+std_error3 <- numeric()
+
+set.seed(1234)
+
+# loop for MC simulation
+# m iterations
+m <- 1000
+for (i in 1:m) {
+  n <- 1000
+  time <- 10
+# init variables
+
+cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
+incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
+
+# creates vector of variables and initialize pchange0
+pchange0<- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
+incomepc <- numeric()
+cw <- numeric()
+pchange <- numeric()
+# period 1 variables
+incomepc <- append(incomepc0, incomepc0*runif(n, .95, 1.1))
+pchange <- append(pchange0, rbinom(n, 1, p=invlogit(-.8*log(incomepc[1001:2000]) + 10*pchange0 + rnorm(n, 0, 8))))
+cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + rnorm(n, 0, 2))
+
+# 5 + cw0[1] + 5*pchange0[1] - .5*log(incomepc0[1]) + rnorm(1, 0, 3)
+# 5 + cw0[2] + 5*pchange0[2] - .5*log(incomepc0[2]) + rnorm(1, 0, 3)
+
+lag_index <- 1:n
+for ( k in 1:time) {
+  incomepc <- append(incomepc,  incomepc[lag_index + n*k]*runif(n, .95, 1.1))
+  pchange <- append(pchange, rbinom(n, 1, p=invlogit(-.8*log(incomepc[lag_index + n*(k+1)]) +
+                                                       10*pchange[lag_index + n*k] + rnorm(n, 0, 8))))
+  cw <- append(cw, 3 + cw[lag_index + n*k] + 5*pchange[lag_index + n*k] - log(incomepc[lag_index + n*k]) +
+                 rnorm(n, 0, 2))
+}
+
+df <- data.frame(cw = cw, pchange = pchange, 
+                 incomepc = incomepc, period = rep(1:(time+2), each= n), id = rep(1:n, time+2)) %>%
+  mutate(log_income =  log(incomepc)) %>%
+  group_by(id) %>%
+  mutate(lag_cw = dplyr::lag(cw, order_by=period),
+         lag_pchange = dplyr::lag(pchange, order_by=period),
+         lag_log_income = dplyr::lag(log_income, order_by = period)) %>%
+  dplyr::filter(period != 1)
+
+
+reg <- feols(cw ~ lag_pchange + lag_log_income + lag_cw, data = df)
+summary(reg)
+
+reg1 <- feols(cw ~ lag_pchange + lag_log_income, data = df)
+summary(reg1)
+
+reg_fe <- feols(cw ~ lag_pchange + lag_log_income + lag_cw  | id  + period, data = df)
+summary(reg_fe)
+
+reg_fe1 <- feols(cw ~ lag_pchange + lag_log_income  | id + period , data = df)
+summary(reg_fe1)
+
+
+estimate[i] <- coef(reg)[2]
+estimate1[i] <- coef(reg1)[2]
+estimate2[i] <- coef(reg_fe)[2]
+estimate3[i] <- coef(reg_fe1)[2]
+
+std_error[i] <- se(reg)[2]
+std_error1[i] <- se(reg1)[2]
+std_error2[i] <- se(reg_fe)[2]
+std_error3[i] <- se(reg_fe1)[2]
+if( i %% 10 == 0) print(i)
+}
+
+# creating data frame to store variables of MC simulation
+df_sim1 <- data.frame(iteration = 1:m, coef1 = estimate, coef2 = estimate1,
+                      std_error1 = std_error, std_error2 = std_error1 )
+
+# Does 95% percent of IC contain the true value?
+df_sim1 %>%
+  mutate(lower = coef1 - 2*std_error1,
+         upper = coef1 + 2*std_error1) %>%
+  summarise(int_95 = sum(abs(lower < 5 & upper > 5))/n())
+
+# Yep  95,2%
+
+# plotting ppaer graphics
+
+set.seed(34)
+# selecting 100 obs of k simulations
+# otherwise the graph is too polluted
+df_plot <- df_sim1 %>%
+  sample_n(size = 100)
+
+# first plot - with lagged DV
+p3 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef1)) +
+  geom_hline(yintercept = 5, colour = "red") +
+  geom_hline(aes(yintercept = mean(coef1)), colour = "blue", linetype='dotted') +
+  geom_errorbar(aes(ymin = coef1 - 1.96*std_error1, ymax = coef1 + 1.96*std_error1), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") +
+  labs(x = "Iteration", y = "Coefficient Estimate") + 
+  theme_bw() +
+  ylim(4.75, 5.25) +
+  ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag + cw_lag")
+
+p3
+
+ggsave(p3, filename = "coef_sim_homg_effect_lag_vd1.png", scale = .8)
+
+  # second plot, withou lagged DV
+p4 <-  df_plot %>%
+  ggplot(aes(x = 1:100, y = coef2)) +
+  geom_point() +
+  geom_hline(yintercept = 5, colour = "red", linetype='dotted') +
+  geom_hline(aes(yintercept = mean(coef2)), colour = "blue") + 
+  geom_errorbar(aes(ymin = coef2 - 1.96*std_error2, ymax = coef2 + 1.96*std_error2), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") + 
+  labs(x = "Iteration", y = "Coefficient Estimate") + 
+  theme_bw() +
+  ggtitle("Regression estimate of Political Change \n cw ~ pol_change_lag + income_lag")
+
+p4
+
+
+ggsave(p4, filename = "coef_sim_homg_effect.png", scale= .8)
+```
+
+The first model needs to be corrected, but the dynamic panel model is, on average, correct. Based on the DAG, we already knew that that was the case. Thus, a DAG can save us much effort and help to specify a model that can identify a causal effect correctly.
+
+## Example of Back to the futre (collider) Bias
+
+As mentioned, the problem with including as many controls as possible is that one may inadvertently include what is called in the Potential Outcomes framework a “bad control” (Angrist & Pischke, 2009). A bad control is either a mediator or a collider. The Potential Outcomes framework provides very generic advice on what is a bad control. When it is a mediator, the lack of precise advice is not a problem because knowing that a mediator cannot be a control variable if one is interested in the total effect is pretty intuitive. However, in the case of colliders, the intuition should be more straightforward, and we need a more formal approach, namely, using DAGs. 
+
+It is important to note that a collider is only a problem if it is in the path between the treatment (our x variable) and the outcome (the y variable). In general, any DAG in a social science context will have plenty of colliders that create spurious associations between variables. However, that is not a problem because those associations are not of interest in a given research. Thus, the DAG is built with a clear goal: to allow one to check if the causal effect of the treatment on the outcome is identified. All other causal relations are only important insofar as they help to identify the causal effect of interest. They are not of interest per se.
+
+Let us return to our previous example of political change and civil war. Suppose, like Hegre et al. (2001), one wants to add other controls to a regression, such as democracy level. The DAG now is as follows:
+
+![DAg civil war with new control](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\democracy_control.png)
+
+If this is the true DAG, then the model is still identified. We show now how it is possible to introduce what we call back to the future bias, if the true DAG (as plausible as the above) is different. We will build it in steps, to make it clear where the problem resides and how it can happen.
+
+## Step 1 of back to the future bias - reverse causality of control z
+
+Let's say that after a civil war onset, the democracy level of the country will likely decrease. In our DAG, this means there is a missing arrow from current civil war nodes to current democracy levels nodes. This is know as potential reverse causality, which is dealt with by lagging the control. Thus. we need to add this arrow and the DAG is now described by the following graph:
+
+![DAg civil war wit inclusion of missing arrowl](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\democracy_control_missing_arrow.png)
+
+## step 2 of back to the future bias -- treatment as cause of control z
+
+In step 2, the researcher should look at the literature on the causes of democracy levels. In standard research practice, this never happens, because according to both control check and confounding checking heuristics, there is no need to review the literature for potential causes of the controls included in the regression and include them also in the regression. We call it foreign literature review, because is a review of literature not directed related to the research question at hand, but not another (foreign) research question (that causes a control?). In any case, let's say she does that and she finds that the treatment of current research, politcal change, is a cause of democracy levels, mediated by another variable, not observed in the current study, $U$. The new DAG reflecting this potential causal channel is as below:
+
+![back to the future bias - civil war DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\foreign collider bias civil war.png)
+
+We ommited some arrows from the DAG to make it as simple as possible. The complete DAG can be found in appendix 1.
+
+The DAG above may be a perfect example of the saying that a picture is worth a thousand words. In the above DAG, we excluded the past values of democracy level, causing civil war for simplicity. The variable $U_2$ is not included in the regression because no one is concerned about it. Our standard heuristics suggest including a variable in a regression as a predictor if it can cause our dependent variable or if it is a potential source of confounding. On the other hand, the same heuristics suggest that we should include democracy level because it can cause civil war (or perhaps is a potential confounding of political change). However, introducing it as a regressor biases the regression. 
+
+To see why it is a collider, notice that democracy level at time $t+1$ is a common effect of $U_2$ and Political Change at time t. By conditioning on democracy level (including it as a control), we open a backdoor path connecting $U_2$ to Civil War. 
+
+This problem is specific to TSCS data because of the usage of lagged variables and the possibility of reverse causality. In the example at hand, the democracy level variable enters the regression lagged to avoid reverse causality. However, the reverse causality means there is an arrow from the dependent variable to current values of democracy level. If there are any other variables, not observed, caused by police change that causes current values of democracy level, there is collider bias.
+
+We simulated to show that the previous specification, which did recover the actual causal effect, fails to do so with the inclusion of a control variable in the new DAG – we omitted the arrows from lagged democracy level to civil war to make things simple.
+
+
+```{r simulation 2, echo=F, message = F, warning = F, cache = TRUE}
+rm(list=ls())
+##################33
+## Fo]reign Collider bias #
+#################3##
+
+estimate <- numeric()
+estimate1 <- numeric()
+estimate2 <- numeric()
+estimate3 <- numeric()
+
+std_error <- numeric()
+std_error1 <- numeric()
+std_error2 <- numeric()
+std_error3 <- numeric()
+
+m <- 1000
+set.seed(1234)
+for (i in 1:m) {
+  n <- 1000 # number of countries
+  time <- 10 # number of periods in the regression
+  # init variables
+  
+  # we will initiate uncaused variables in the period 0.
+  cw0 <- -2 + rnorm(n, 0, 3) # 30% tem civil war no tempo t0 
+  incomepc0 <- 1000*exp(rnorm(n)) + 100 # log normal
+  democracy0 <- rnorm(n)
+  u0 <- rnorm(n)
+  
+  # initialize pchange0 - political change
+  pchange0 <- rbinom(n, 1, p=invlogit(-.8*log(incomepc0) + rnorm(n, 0, 10))) 
+  
+  # creating vector of variables and 
+  incomepc <- numeric()
+  cw <- numeric()
+  pchange <- numeric()
+  democracy <- numeric()
+  u <- numeric()
+  
+  # period 1 variables
+  
+  incomepc <- append(incomepc0, incomepc0*runif(n, .95, 1.1) - .2*cw0 )
+  pchange <- append(pchange0, rbinom(n, 1, p=invlogit(-.8*log(incomepc[1001:2000]) + 10*pchange0 + rnorm(n, 0, 8))))
+  cw <- append(cw0, 3 + cw0 + 5*pchange0 - log(incomepc0) + .3*democracy0 + rnorm(n, 0, 2))
+  u <- append(u0, pchange[1001:2000] + rnorm(n))
+  democracy <- append(democracy0, u[1001:2000] - cw[1001:2000] + rnorm(n))
+
+  # all other periods
+  lag_index <- 1:n
+  for ( k in 1:time) {
+    incomepc <- append(incomepc,  incomepc[lag_index + n*k]*runif(n, .95, 1.1) - .2*cw[lag_index + n*k])
+    pchange <- append(pchange, rbinom(n, 1, p=invlogit(-.8*log(incomepc[lag_index + n*(k+1)]) +
+                                                         10*pchange[lag_index + n*k] + rnorm(n, 0, 8))))
+    cw <- append(cw, 3 + cw[lag_index + n*k] + 5*pchange[lag_index + n*k] - log(incomepc[lag_index + n*k]) +
+                   rnorm(n, 0, 2))
+    u <- append(u, pchange[lag_index + n*k] + rnorm(n))
+    democracy <- append(democracy, u[lag_index + n*(k+1)]  - cw[lag_index + n*(k+1)]  + rnorm(n))
+  }
+  
+  df <- data.frame(cw = cw, pchange = pchange, 
+                   incomepc = incomepc, u = u, democracy = democracy,
+                   period = rep(1:(time+2), each= n), id = rep(1:n, time+2)) %>%
+    mutate(log_income =  log(incomepc)) %>%
+    group_by(id) %>%
+    mutate(lag_cw = dplyr::lag(cw, order_by=period),
+           lag_pchange = dplyr::lag(pchange, order_by=period),
+           lag_log_income = dplyr::lag(log_income, order_by = period),
+           lag_u = dplyr::lag(u, order_by=period),
+           lag_democracy = dplyr::lag(democracy, order_by=period),) %>%
+    dplyr::filter(period != 1)
+  
+  # fit regressions
+  reg <- feols(cw ~ lag_pchange + lag_log_income + lag_cw + democracy, data = df)
+  summary(reg)
+  
+  reg1 <- feols(cw ~ lag_pchange + lag_log_income + lag_cw , data = df)
+  summary(reg1)
+  
+  reg_fe <- feols(cw ~ lag_pchange + lag_log_income + lag_cw  | id  + period, data = df)
+  summary(reg_fe)
+  
+  reg_fe1 <- feols(cw ~ lag_pchange + lag_log_income  | id + period , data = df)
+  summary(reg_fe1)
+  
+  # store coef
+  estimate[i] <- coef(reg)[2]
+  estimate1[i] <- coef(reg1)[2]
+  estimate2[i] <- coef(reg_fe)[2]
+  estimate3[i] <- coef(reg_fe1)[2]
+  
+  #store se
+  std_error[i] <- se(reg)[2]
+  std_error1[i] <- se(reg1)[2]
+  std_error2[i] <- se(reg_fe)[2]
+  std_error3[i] <- se(reg_fe1)[2]
+  
+  # monitor loop by print every ten iterations
+  if ( i %% 10 == 0) print(i)
+}
+
+df_sim1 <- data.frame(iteration = 1:m, coef1 = estimate, coef2 = estimate1,
+                      std_error1 = std_error, std_error2 = std_error1 )
+
+df_sim1 %>%
+  mutate(lower = coef2 - 2*std_error2,
+         upper = coef2 + 2*std_error2) %>%
+  summarise(int_95 = sum(abs(lower < 5 & upper > 5))/n())
+
+# 95.7%
+
+set.seed(34)
+df_plot <- df_sim1 %>%
+  sample_n(size = 100)
+
+p5 <- df_plot %>%
+  ggplot(aes(x = 1:100, y = coef1)) +
+  geom_hline(aes(yintercept = mean(coef1)), colour = "blue", linetype='dotted') +
+  geom_errorbar(aes(ymin = coef1 - 1.96*std_error1, ymax = coef1 + 1.96*std_error1), width = 0.2) +
+  geom_point( size=2, shape=21, fill="white") +
+  labs(x = "Iteration", y = "Coefficient Estimate") + 
+  theme_bw() +
+  ylim(2, 3) +
+  ggtitle("Regression estimate - Collider bias \n cw ~ pol_change_lag + income_lag + cw_lag +  \n democracy_level")
+
+p5
+ggsave(p5, filename = "collider_bias.png", scale = .7)
+
+p6 <-  df_plot %>%
+  ggplot(aes(x = 1:100, y = coef2)) +
+  geom_point() +
+  geom_hline(yintercept = 5, colour = "red", linetype='dotted') +
+  geom_hline(aes(yintercept = mean(coef2)), colour = "blue") + 
+  geom_errorbar(aes(ymin = coef2 - 1.96*std_error2, ymax = coef2 + 1.96*std_error2), width = 0.2) +
+  geom_point( size=3, shape=21, fill="white") + 
+  labs(x = "Iteration", y = "Coefficient Estimate") + 
+  theme_bw() +
+  ggtitle("No collider bias \n cw ~ pol_change_lag + income_lag + cw_lag")
+
+p6
+
+ggsave(p6, filename = "no_collider_bias.png",  scale = .8)
+
+```
+
+In the chart above, we ran a regression including lagged democracy level as a control. In the true Data Generating Process (DGP), it did not cause civil war. However, civil war caused the current values of democracy level, and an unobserved variable, U, caused democracy level and was caused by political changThethe DGP was the same in the next chart. However, we excluded democracy level from the regression. As we can see, the true causal effect of 5 is recovered on average.
+
+# Back to the futue bias - generic case
+
+The problem of back to the future bias is not restricted to this particular case. It is a generic feature os TSCS regression, whenever some conditions are present, which we provide below:
+
+## The predictors are lagged
+
+Whenever the predictors as lagged (possibly to avoid reverse causality) we create the possibility of back to the future collider bias, due to the fact that we may have a dynamic where $x_{t-1} \rightarrow y_t \rightarrow x_t \rightarrow y_{t+1}$. To open a backdoor previously closed when conditioning on a future collider in the context of TSCS, it is necessary this dynamic relation Otherwise, there is no way for a future collider bias the past, so to speaking.
+
+## Reverse causality from the outcome to a control
+
+In general we are concerned about reverse causality from the outcome to the treatment. However, in the case of the back to the future bias, the problem is reverse causality from the dependent variable on any of the controls. For each potential reverse causality of this type ($y \rightarrow z$, in which $z$ is a control), together if lagged predictors we can have back to the future collider bias.
+
+## the treatment causes one (or more) control(s)
+
+Lastly, When the main treatment of interest causes one of the controls, mediated by an unobserved variables or unmeasured variable, in combination with the two previously condition, necessarily we have back to the future collider bias. The DAG below (for a one time period "screen shot" of a TSCS design) show that this is the case.
+
+
+![back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png)
+
+
+# Tables coming from R
+
+Tables can also be generated using R chunks, as shown in @tbl-simple example.
+
+```{r}
+#| label: tbl-simple
+#| tbl-cap: Caption centered above table
+#| echo: true
+knitr::kable(head(mtcars)[,1:4])
+```
+
+
+# Equations
+
+Here is an equation:
+$$ 
+  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
+  \left(\frac{x}{\beta}\right)^{\alpha-1}
+  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
+  \alpha,\beta,x > 0 .
+$$
+
+Inline equations work as well: $\sum_{i = 2}^\infty\{\alpha_i^\beta\}$
+
+
+Please make sure that your manuscript follows the guidelines in the 
+Guide for Authors of the relevant journal. It is not necessary to 
+typeset your manuscript in exactly the same way as an article, 
+unless you are submitting to a camera-ready copy (CRC) journal.
+
+For detailed instructions regarding the elsevier article class, see   <https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions>
+
+# Bibliography styles
+
+Here are two sample references:  @Feynman1963118 @Dirac1953888.
+
+By default, natbib will be used with the `authoryear` style, set in `classoption` variable in YAML. 
+You can sets extra options with `natbiboptions` variable in YAML header. Example 
+
+```
+natbiboptions: longnamesfirst,angle,semicolon
+```
+
+There are various more specific bibliography styles available at
+<https://support.stmdocs.in/wiki/index.php?title=Model-wise_bibliographic_style_files>. 
+To use one of these, add it in the header using, for example, `biblio-style: model1-num-names`.
+
+## Using CSL 
+
+If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded
+and stored locally, or the url can be used as in the example header.
+
+
+# References {-}
