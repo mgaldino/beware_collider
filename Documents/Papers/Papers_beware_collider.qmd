@@ -544,12 +544,29 @@ Whenever the predictors as lagged (possibly to avoid reverse causality) we creat
 
 In general we are concerned about reverse causality from the outcome to the treatment. However, in the case of the back to the future bias, the problem is reverse causality from the dependent variable on any of the controls. For each potential reverse causality of this type ($y \rightarrow z$, in which $z$ is a control), together if lagged predictors we can have back to the future collider bias.
 
-## the treatment causes one (or more) control(s)
+## the treatment causes one (or more) control(s) in foreing literature
 
 Lastly, When the main treatment of interest causes one of the controls, mediated by an unobserved variables or unmeasured variable, in combination with the two previously condition, necessarily we have back to the future collider bias. The DAG below (for a one time period "screen shot" of a TSCS design) show that this is the case.
 
 
 ![back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png)
+
+# How to avoid the Back to the Future Bias
+
+The Back t the Future Bias emerged due to the inclusion of a collider in the regression. There are three ways to fix this problem. The first one is just to not include it in the regression in the first place. This solution is likely limited, however, if the collider was included as a control to unconfound the causal effect of interest in the first place. Excluding it may increase the bias, instead of diminishing.
+
+A second approach to solve the problem is to control for a variable in the path from the collider to the control, such as $U_{t+1}$. Controlling for it will block the biasing effect of the collider, while preserving its unconfouding effect. This solution, however, requires that one can observe and measure such a mediator, which is not always easy.
+
+The third approach is to control for the lagged dependent variable, and the strategy implemented in the simulations of our paper. This is the easiest solution, specially because it does nor require one to know if there is a potential collider. However, it also limits the research questions that can be asked from data, as it is known from the literature on dynamic panel data models (See insert ref).
+
+All possible solutions have their own limitations and the suitability of each one of them (or even a combination of more than one) depends on the problem at hand. We think that the most safe is the inclusion of the lagged DV, as it does not require an specification of a complete DAG with all potential colliders, which are necessary in the other two approaches. But, as mentioned, it depends on a dynamic panel data model being suitable for the research question of interest.
+
+
+# Prevalence
+
+One may wonder how prevalent this problem is. We analyzed all empirical papers from APSR, AJPS and IO from 2022 and 2023, for a total of 83 articles. About 40% (33 papers) of them had TSCS data. We draw a DAG for the main analysis of each 33 papers in this sample and verified when it could be present the back to the future bias, based solely on the DAG derived from the paper and a cursory reading of a foreign literature (step 3 in the section xx). We found that in about xx% of the 33 papers analyzed there is potential back to the future bias that should be tested for, which shows how important this problem could be. We randomly selected 10 of the 33 papers to redo the analysis, trying to block the causal path open by the potential introduction of collider and found that in xx% of the times, there is an important change either in the signal of the coefficient of interest or in its significance.
+
+This shows how important the problem is. Researchers should be aware of it and starting including robustness checks for back to the future bias, using the stratagies presented in the paper to avoid it.
 
 
 # Tables coming from R
