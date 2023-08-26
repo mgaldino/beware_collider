@@ -52,46 +52,6 @@
   \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{241,243,245}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
-\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
@@ -175,7 +135,7 @@
 \makeatother
 \makeatletter
 \makeatother
-\journal{Political Analysis}
+\journal{TBD}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -211,14 +171,14 @@
 \author[3]{Carolina Dolleans%
 %
 \fnref{fn3}}
- \ead{cat@example.com} 
+ \ead{carolina.dolleans@ufpe.br} 
 
 \affiliation[1]{organization={University of São Paulo, Political
 Science},city={São Paulo},postcodesep={}}
 \affiliation[2]{organization={Emory University, Political
-Science},city={Atlatna},postcodesep={}}
+Science},city={Atlanta},postcodesep={}}
 \affiliation[3]{organization={Universidade Federal de
-Pernambuco, Political Science},,postcodesep={}}
+Pernambuco, Political Science},city={Recife},postcodesep={}}
 
 \cortext[cor1]{Corresponding author}
 \fntext[fn1]{This is the first author footnote.}
@@ -252,7 +212,7 @@ in finite samples.
     DAG
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -402,10 +362,10 @@ independence relations found in the data. It thus presupposes that all
 relevant variables have been included, which is precisely the problem we
 need to solve in the first place.
 
-\hypertarget{dag-aproache-for-incusion-of-controls---dag-controls}{%
-\subsection{\texorpdfstring{DAG aproache for incusion of controls -
+\hypertarget{dag-aproach-for-incusion-of-controls---dag-controls}{%
+\subsection{\texorpdfstring{DAG aproach for incusion of controls -
 \emph{DAG
-controls}}{DAG aproache for incusion of controls - DAG controls}}\label{dag-aproache-for-incusion-of-controls---dag-controls}}
+controls}}{DAG aproach for incusion of controls - DAG controls}}\label{dag-aproach-for-incusion-of-controls---dag-controls}}
 
 A third approach is the one Pearl advocated and used in the present
 paper. The researcher should draw a Directed Acyclic Graph to determine
@@ -438,7 +398,17 @@ of a DAG: a fork, a chain and an inverted fork (also called a collider).
 
 \begin{figure*}
 
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}[t]{0.07\linewidth}
+
+{\centering 
+
+~
+
+}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.27\linewidth}
 
 {\centering 
 
@@ -454,7 +424,17 @@ of a DAG: a fork, a chain and an inverted fork (also called a collider).
 x and y. You should control for it to avoid ommited variable bias}
 \end{minipage}%
 %
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}[t]{0.07\linewidth}
+
+{\centering 
+
+~
+
+}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.27\linewidth}
 
 {\centering 
 
@@ -471,7 +451,17 @@ causes y. We say that z is a mediator of thecausal effect of x on y. You
 should not control for z.}
 \end{minipage}%
 %
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}[t]{0.07\linewidth}
+
+{\centering 
+
+~
+
+}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.27\linewidth}
 
 {\centering 
 
@@ -601,119 +591,14 @@ which only lagged predictors for political change and per capita income
 were included. The second chart added a lagged dependent variable to the
 model. The true effect of political change on civil war is \(5\).
 
-\includegraphics{Papers_beware_collider_files/figure-pdf/simulation 1-1.pdf}
-
-\begin{verbatim}
-[1] 10
-[1] 20
-[1] 30
-[1] 40
-[1] 50
-[1] 60
-[1] 70
-[1] 80
-[1] 90
-[1] 100
-[1] 110
-[1] 120
-[1] 130
-[1] 140
-[1] 150
-[1] 160
-[1] 170
-[1] 180
-[1] 190
-[1] 200
-[1] 210
-[1] 220
-[1] 230
-[1] 240
-[1] 250
-[1] 260
-[1] 270
-[1] 280
-[1] 290
-[1] 300
-[1] 310
-[1] 320
-[1] 330
-[1] 340
-[1] 350
-[1] 360
-[1] 370
-[1] 380
-[1] 390
-[1] 400
-[1] 410
-[1] 420
-[1] 430
-[1] 440
-[1] 450
-[1] 460
-[1] 470
-[1] 480
-[1] 490
-[1] 500
-[1] 510
-[1] 520
-[1] 530
-[1] 540
-[1] 550
-[1] 560
-[1] 570
-[1] 580
-[1] 590
-[1] 600
-[1] 610
-[1] 620
-[1] 630
-[1] 640
-[1] 650
-[1] 660
-[1] 670
-[1] 680
-[1] 690
-[1] 700
-[1] 710
-[1] 720
-[1] 730
-[1] 740
-[1] 750
-[1] 760
-[1] 770
-[1] 780
-[1] 790
-[1] 800
-[1] 810
-[1] 820
-[1] 830
-[1] 840
-[1] 850
-[1] 860
-[1] 870
-[1] 880
-[1] 890
-[1] 900
-[1] 910
-[1] 920
-[1] 930
-[1] 940
-[1] 950
-[1] 960
-[1] 970
-[1] 980
-[1] 990
-[1] 1000
-\end{verbatim}
-
 \begin{verbatim}
   int_95
 1  0.952
 \end{verbatim}
 
-\includegraphics{Papers_beware_collider_files/figure-pdf/simulation 1-2.pdf}
+\includegraphics{Papers_beware_collider_files/figure-pdf/simulation 1-1.pdf}
 
-\includegraphics{Papers_beware_collider_files/figure-pdf/simulation 1-3.pdf}
+\includegraphics{Papers_beware_collider_files/figure-pdf/simulation 1-2.pdf}
 
 The first model needs to be corrected, but the dynamic panel model is,
 on average, correct. Based on the DAG, we already knew that that was the
@@ -849,109 +734,6 @@ variable in the new DAG -- we omitted the arrows from lagged democracy
 level to civil war to make things simple.
 
 \begin{verbatim}
-[1] 10
-[1] 20
-[1] 30
-[1] 40
-[1] 50
-[1] 60
-[1] 70
-[1] 80
-[1] 90
-[1] 100
-[1] 110
-[1] 120
-[1] 130
-[1] 140
-[1] 150
-[1] 160
-[1] 170
-[1] 180
-[1] 190
-[1] 200
-[1] 210
-[1] 220
-[1] 230
-[1] 240
-[1] 250
-[1] 260
-[1] 270
-[1] 280
-[1] 290
-[1] 300
-[1] 310
-[1] 320
-[1] 330
-[1] 340
-[1] 350
-[1] 360
-[1] 370
-[1] 380
-[1] 390
-[1] 400
-[1] 410
-[1] 420
-[1] 430
-[1] 440
-[1] 450
-[1] 460
-[1] 470
-[1] 480
-[1] 490
-[1] 500
-[1] 510
-[1] 520
-[1] 530
-[1] 540
-[1] 550
-[1] 560
-[1] 570
-[1] 580
-[1] 590
-[1] 600
-[1] 610
-[1] 620
-[1] 630
-[1] 640
-[1] 650
-[1] 660
-[1] 670
-[1] 680
-[1] 690
-[1] 700
-[1] 710
-[1] 720
-[1] 730
-[1] 740
-[1] 750
-[1] 760
-[1] 770
-[1] 780
-[1] 790
-[1] 800
-[1] 810
-[1] 820
-[1] 830
-[1] 840
-[1] 850
-[1] 860
-[1] 870
-[1] 880
-[1] 890
-[1] 900
-[1] 910
-[1] 920
-[1] 930
-[1] 940
-[1] 950
-[1] 960
-[1] 970
-[1] 980
-[1] 990
-[1] 1000
-\end{verbatim}
-
-\begin{verbatim}
   int_95
 1  0.957
 \end{verbatim}
@@ -968,8 +750,9 @@ and was caused by political changThethe DGP was the same in the next
 chart. However, we excluded democracy level from the regression. As we
 can see, the true causal effect of 5 is recovered on average.
 
-\hypertarget{back-to-the-futue-bias}{%
-\section{Back to the futue bias}\label{back-to-the-futue-bias}}
+\hypertarget{back-to-the-futue-bias---generic-case}{%
+\section{Back to the futue bias - generic
+case}\label{back-to-the-futue-bias---generic-case}}
 
 The problem of back to the future bias is not restricted to this
 particular case. It is a generic feature os TSCS regression, whenever
@@ -997,9 +780,9 @@ controls. For each potential reverse causality of this type
 (\(y \rightarrow z\), in which \(z\) is a control), together if lagged
 predictors we can have back to the future collider bias.
 
-\hypertarget{the-treatment-causes-one-or-more-controls}{%
-\subsection{the treatment causes one (or more)
-control(s)}\label{the-treatment-causes-one-or-more-controls}}
+\hypertarget{the-treatment-causes-one-or-more-controls-in-foreing-literature}{%
+\subsection{the treatment causes one (or more) control(s) in foreing
+literature}\label{the-treatment-causes-one-or-more-controls-in-foreing-literature}}
 
 Lastly, When the main treatment of interest causes one of the controls,
 mediated by an unobserved variables or unmeasured variable, in
@@ -1007,68 +790,73 @@ combination with the two previously condition, necessarily we have back
 to the future collider bias. The DAG below (for a one time period
 ``screen shot'' of a TSCS design) show that this is the case.
 
+The three conditions is illustrated well by generic one period TSCS DAG
+Figure~\ref{fig-generic_dag}.
+
 \begin{figure}
 
-{\centering \includegraphics{C:/Users/mczfe/Documents/Papers/Collider TSCS/beware_collider/images/basic_back_future_bias.png}
+{\centering \includegraphics[width=0.5\textwidth,height=\textheight]{C:/Users/mczfe/Documents/Papers/Collider TSCS/beware_collider/images/basic_back_future_bias.png}
 
 }
 
-\caption{back to the future bias - one period DAG}
+\caption{\label{fig-generic_dag}Back to the future bias - one period
+DAG}
 
 \end{figure}
 
-\hypertarget{tables-coming-from-r}{%
-\section{Tables coming from R}\label{tables-coming-from-r}}
+\hypertarget{how-to-avoid-the-back-to-the-future-bias}{%
+\section{How to avoid the Back to the Future
+Bias}\label{how-to-avoid-the-back-to-the-future-bias}}
 
-Tables can also be generated using R chunks, as shown in
-Table~\ref{tbl-simple} example.
+The Back t the Future Bias emerged due to the inclusion of a collider in
+the regression. There are three ways to fix this problem. The first one
+is just to not include it in the regression in the first place. This
+solution is likely limited, however, if the collider was included as a
+control to unconfound the causal effect of interest in the first place.
+Excluding it may increase the bias, instead of diminishing.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(mtcars)[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{])}
-\end{Highlighting}
-\end{Shaded}
+A second approach to solve the problem is to control for a variable in
+the path from the collider to the control, such as \(U_{t+1}\).
+Controlling for it will block the biasing effect of the collider, while
+preserving its unconfouding effect. This solution, however, requires
+that one can observe and measure such a mediator, which is not always
+easy.
 
-\hypertarget{tbl-simple}{}
-\begin{longtable}[]{@{}lrrrr@{}}
-\caption{\label{tbl-simple}Caption centered above table}\tabularnewline
-\toprule\noalign{}
-& mpg & cyl & disp & hp \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-& mpg & cyl & disp & hp \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Mazda RX4 & 21.0 & 6 & 160 & 110 \\
-Mazda RX4 Wag & 21.0 & 6 & 160 & 110 \\
-Datsun 710 & 22.8 & 4 & 108 & 93 \\
-Hornet 4 Drive & 21.4 & 6 & 258 & 110 \\
-Hornet Sportabout & 18.7 & 8 & 360 & 175 \\
-Valiant & 18.1 & 6 & 225 & 105 \\
-\end{longtable}
+The third approach is to control for the lagged dependent variable, and
+the strategy implemented in the simulations of our paper. This is the
+easiest solution, specially because it does nor require one to know if
+there is a potential collider. However, it also limits the research
+questions that can be asked from data, as it is known from the
+literature on dynamic panel data models (See insert ref).
 
-\hypertarget{equations}{%
-\section{Equations}\label{equations}}
+All possible solutions have their own limitations and the suitability of
+each one of them (or even a combination of more than one) depends on the
+problem at hand. We think that the most safe is the inclusion of the
+lagged DV, as it does not require an specification of a complete DAG
+with all potential colliders, which are necessary in the other two
+approaches. But, as mentioned, it depends on a dynamic panel data model
+being suitable for the research question of interest.
 
-Here is an equation: \[ 
-  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
-  \left(\frac{x}{\beta}\right)^{\alpha-1}
-  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
-  \alpha,\beta,x > 0 .
-\]
+\hypertarget{prevalence}{%
+\section{Prevalence}\label{prevalence}}
 
-Inline equations work as well: \(\sum_{i = 2}^\infty\{\alpha_i^\beta\}\)
+One may wonder how prevalent this problem is. We analyzed all empirical
+papers from APSR, AJPS and IO from 2022 and 2023, for a total of 83
+articles. About 40\% (33 papers) of them had TSCS data. We draw a DAG
+for the main analysis of each 33 papers in this sample and verified when
+it could be present the back to the future bias, based solely on the DAG
+derived from the paper and a cursory reading of a foreign literature
+(step 3 in the section xx). We found that in about xx\% of the 33 papers
+analyzed there is potential back to the future bias that should be
+tested for, which shows how important this problem could be. We randomly
+selected 10 of the 33 papers to redo the analysis, trying to block the
+causal path open by the potential introduction of collider and found
+that in xx\% of the times, there is an important change either in the
+signal of the coefficient of interest or in its significance.
 
-Please make sure that your manuscript follows the guidelines in the
-Guide for Authors of the relevant journal. It is not necessary to
-typeset your manuscript in exactly the same way as an article, unless
-you are submitting to a camera-ready copy (CRC) journal.
-
-For detailed instructions regarding the elsevier article class, see
-\url{https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions}
+This shows how important the problem is. Researchers should be aware of
+it and starting including robustness checks for back to the future bias,
+using the stratagies presented in the paper to avoid it.
 
 \hypertarget{bibliography-styles}{%
 \section{Bibliography styles}\label{bibliography-styles}}

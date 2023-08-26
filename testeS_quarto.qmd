@@ -1,0 +1,53 @@
+---
+title: "back to the future bias paper"
+format:
+  elsevier-pdf:
+    cap-location: top
+    keep-tex: true
+    journal:
+      name: Political Analysis
+      formatting: preprint
+      model: 3p
+      cite-style: super
+---
+
+## Quarto
+
+```{r basic dags1, message=FALSE, warning=FALSE}
+#| label: fig-basicdag
+#| fig-cap: "Three types of basic DAGs."
+#| fig-cap-location: top
+#| fig-subcap:
+#|   - "Fork. Variable z is a common cause of x and y. You should control for it to avoid ommited variable bias"
+#|   - "Chain. Variable x causes z, which causes y. We say that z is a mediator of thecausal effect of x on y. You should not control for z."
+#|   - "Invested-fork. Variable z is a common effect of x and y. Controlling for z opens a backdoor"
+#| layout: [[40,-10, 40, -10, 40]]
+#| column: page
+#| out-width: 25%
+#| echo: false
+
+library(dagitty)
+library(ggdag)
+library(ggplot2)
+
+#  You should not control for z if you are interested in estimating the effect of x on y. It is a bad control.
+dag_f <- dagitty("dag{y <- z -> x}")
+ggdag(dag_f, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+dag_c <- dagitty("dag{x <- z -> y}")
+ggdag(dag_c, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+
+dag_c <- dagitty("dag{x -> z <- y}")
+ggdag(dag_c, layout = "circle") + theme_light() + xlab("") + ylab("")  +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank())
+
+```
+
+texto text 
+![Back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png){#fig-generic_dag width=50%}

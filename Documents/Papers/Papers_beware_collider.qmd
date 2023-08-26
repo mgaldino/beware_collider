@@ -19,14 +19,16 @@ author:
         - id: another-u
           name: Emory University
           department: Political Science
-          city: Atlatna
+          city: Atlanta
           state: Georgia
     note: We would like Fernando Limongi, Lorena Barberia, Umberto Mignozetti and participants at the Political Science graduate seminar at University of São Paulo and the Polmeth Latam session participants.
   - name: Carolina Dolleans
-    email: cat@example.com
+    email: carolina.dolleans@ufpe.br
     affiliations:
         name: Universidade Federal de Pernambuco
         department: Political Science
+        city: Recife
+        state: Pernambuco
     note: Yet another author footnote.
 abstract: |
   Current applied Time Series Cross Section (TSCS) regressions analysis aimed at identifying a causal effect is not aware that standard practice of controls inclusion can introduce what we call back to the future bias. In the present paper, we develop a tipoligy for current heuristics for control inclusion and show that they can inadvertently introduce a collider variable in the context of TSCS data that may bias the result (back to the future bias). A review of a sample of applied TSCS papers shows that this is a prevalent problem in the political science and international relations literature. To address this matter, we present  an improved heuristic to build a DAG that properly controls for the correct variables in the context of TSCS data analysis and avoid the back to the future bias. Monte Carlo simulation shows that it works well in finite samples.
@@ -41,7 +43,7 @@ format:
   elsevier-pdf:
     keep-tex: true
     journal:
-      name: Political Analysis
+      name: TBD
       formatting: preprint
       model: 3p
       cite-style: super
@@ -92,7 +94,7 @@ Another possibility is to use formal modeling to develop criteria for including 
 
 Another possible approach is causal discovery (Spirtes & Zhang, 2016;  Glymour et al., 2019; Duart et al., 2021). However, it is based on independence relations found in the data. It thus presupposes that all relevant variables have been included, which is precisely the problem we need to solve in the first place.
 
-## DAG aproache for incusion of controls - *DAG controls*
+## DAG aproach for incusion of controls - *DAG controls*
 
 A third approach is the one Pearl advocated and used in the present paper. The researcher should draw a Directed Acyclic Graph to determine whether the causal impact is identified, notably whether any controls are missing or whether an erroneously included "bad control" actually biases the causal effect. Adopting this approach, she can even think about possible unobservable variables that will be impossible to control in the study, fairly setting the study's limits. To see how it can help, we will introduce the reader to DAGs and provide an example of an application in the context of TSCS.
 
@@ -105,15 +107,16 @@ All DAGs are composed of three basic structures: chains, forks and colliders (or
 
 The charts in @fig-basicdag show the three basic structure of a DAG: a fork, a chain and an inverted fork (also called a collider).
 
-```{r basic dags1, message=FALSE, warning=FALSE}
+```{r basic dags1, message=FALSE, warning=FALSE, fig.align="center"}
 #| label: fig-basicdag
 #| fig-cap: "Three types of basic DAGs."
 #| fig-subcap:
 #|   - "Fork. Variable z is a common cause of x and y. You should control for it to avoid ommited variable bias"
 #|   - "Chain. Variable x causes z, which causes y. We say that z is a mediator of thecausal effect of x on y. You should not control for z."
 #|   - "Invested-fork. Variable z is a common effect of x and y. Controlling for z opens a backdoor"
-#| layout-ncol: 3
+#| layout: [[-10, 40, -10, 40, -10, 40]]
 #| column: page
+#| fig-caption: top
 #| out-width: 30%
 #| echo: false
 
@@ -198,14 +201,14 @@ library(fixest)
 library(plm)
 
 # fristly, let's plot the DAG that will be simulated
-lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
-                               cw1 ~ cw0 + pchange0 + incomepc0,
-                               pchange1 ~ pchange0 + incomepc1,
-                               incomepc1 ~ incomepc0,
-                               pchange0 ~ incomepc0
-)
-
-ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
+# lag_treatment <- ggdag::dagify(cw2 ~ cw1 + pchange1 + incomepc1,
+#                                cw1 ~ cw0 + pchange0 + incomepc0,
+#                                pchange1 ~ pchange0 + incomepc1,
+#                                incomepc1 ~ incomepc0,
+#                                pchange0 ~ incomepc0
+# )
+# 
+# ggdag::ggdag(lag_treatment, text_col = "red", label_col = "white")
 
 ## Monte Carlo Simulation
 
@@ -292,7 +295,7 @@ std_error[i] <- se(reg)[2]
 std_error1[i] <- se(reg1)[2]
 std_error2[i] <- se(reg_fe)[2]
 std_error3[i] <- se(reg_fe1)[2]
-if( i %% 10 == 0) print(i)
+
 }
 
 # creating data frame to store variables of MC simulation
@@ -482,8 +485,6 @@ for (i in 1:m) {
   std_error2[i] <- se(reg_fe)[2]
   std_error3[i] <- se(reg_fe1)[2]
   
-  # monitor loop by print every ten iterations
-  if ( i %% 10 == 0) print(i)
 }
 
 df_sim1 <- data.frame(iteration = 1:m, coef1 = estimate, coef2 = estimate1,
@@ -548,8 +549,10 @@ In general we are concerned about reverse causality from the outcome to the trea
 
 Lastly, When the main treatment of interest causes one of the controls, mediated by an unobserved variables or unmeasured variable, in combination with the two previously condition, necessarily we have back to the future collider bias. The DAG below (for a one time period "screen shot" of a TSCS design) show that this is the case.
 
+The three conditions is illustrated well by generic one period TSCS DAG @fig-generic_dag.
 
-![back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png)
+
+![Back to the future bias - one period DAG](C:\\Users\\mczfe\\Documents\\Papers\\Collider TSCS\\beware_collider\\images\\basic_back_future_bias.png){#fig-generic_dag width=50%}
 
 # How to avoid the Back to the Future Bias
 
@@ -569,37 +572,7 @@ One may wonder how prevalent this problem is. We analyzed all empirical papers f
 This shows how important the problem is. Researchers should be aware of it and starting including robustness checks for back to the future bias, using the stratagies presented in the paper to avoid it.
 
 
-# Tables coming from R
 
-Tables can also be generated using R chunks, as shown in @tbl-simple example.
-
-```{r}
-#| label: tbl-simple
-#| tbl-cap: Caption centered above table
-#| echo: true
-knitr::kable(head(mtcars)[,1:4])
-```
-
-
-# Equations
-
-Here is an equation:
-$$ 
-  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
-  \left(\frac{x}{\beta}\right)^{\alpha-1}
-  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
-  \alpha,\beta,x > 0 .
-$$
-
-Inline equations work as well: $\sum_{i = 2}^\infty\{\alpha_i^\beta\}$
-
-
-Please make sure that your manuscript follows the guidelines in the 
-Guide for Authors of the relevant journal. It is not necessary to 
-typeset your manuscript in exactly the same way as an article, 
-unless you are submitting to a camera-ready copy (CRC) journal.
-
-For detailed instructions regarding the elsevier article class, see   <https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions>
 
 # Bibliography styles
 
