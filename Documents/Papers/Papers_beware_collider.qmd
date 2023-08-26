@@ -31,7 +31,7 @@ author:
         state: Pernambuco
     note: Yet another author footnote.
 abstract: |
-  Current applied Time Series Cross Section (TSCS) regressions analysis aimed at identifying a causal effect is not aware that standard practice of controls inclusion can introduce what we call back to the future bias. In the present paper, we develop a tipoligy for current heuristics for control inclusion and show that they can inadvertently introduce a collider variable in the context of TSCS data that may bias the result (back to the future bias). A review of a sample of applied TSCS papers shows that this is a prevalent problem in the political science and international relations literature. To address this matter, we present  an improved heuristic to build a DAG that properly controls for the correct variables in the context of TSCS data analysis and avoid the back to the future bias. Monte Carlo simulation shows that it works well in finite samples.
+  Current applied Time Series Cross Section (TSCS) regressions analysis aimed at identifying a causal effect is not aware that standard practice of controls inclusion can introduce what we call back to the future bias. In the present paper, we develop a tipoligy for current heuristics for control inclusion and show that they can inadvertently introduce a collider variable in the context of TSCS data that may bias the result (back to the future bias). A review of a sample of applied TSCS papers shows that this is a prevalent problem in the political science and international relations literature. To tackle this issue, we introduce an enhanced heuristic involving the construction of a Directed Acyclic Graph (DAG). This DAG effectively controls for the relevant variables in TSCS data analysis, avoiding the 'back to the future bias'. Monte Carlo simulation shows that it works well in finite samples.
 
 keywords: 
   - Time Series Cross Section
@@ -88,13 +88,13 @@ This is a better heuristic for causal inference, because it is focused on dimini
 
 ## Model based approaches for inclusion of controls - *modeled controls*
 
-Those are the two most common heuristics researchers use to decide which variables to include as controls. A review of *xx* paperspublished in some of the top journals of the profession *[insert note]* shows that $xx%$ of all the papers published in the period 2018-2022 use these two heuristics for inclusion of controls. 
+Those are the two most common heuristics researchers use to decide which variables to include as controls. A review of $xx$ papers published in some of the top journals in the field [insert note] reveals that $xx%$ of all papers published from 2018 to 2022 employ these two heuristics for control inclusion. 
 
 Another possibility is to use formal modeling to develop criteria for including controls. Some authors, such as Heckman (2008), argue that the researcher needs to explicitly model the selection into treatment by agents, which imply to model the controls in a selection on observables strategy. Formally modeling agents' choices is a way to deal with this problem because one can formally assess if the causal effect is identified. However, this may be impossible in practice due to tractability constraints or a lack of precise scientific knowledge on the matter.
 
 Another possible approach is causal discovery (Spirtes & Zhang, 2016;  Glymour et al., 2019; Duart et al., 2021). However, it is based on independence relations found in the data. It thus presupposes that all relevant variables have been included, which is precisely the problem we need to solve in the first place.
 
-## DAG aproach for incusion of controls - *DAG controls*
+## Using Directed Acyclic Graphs (DAGs) for Variable Control Inclusion - DAG-based Controls
 
 A third approach is the one Pearl advocated and used in the present paper. The researcher should draw a Directed Acyclic Graph to determine whether the causal impact is identified, notably whether any controls are missing or whether an erroneously included "bad control" actually biases the causal effect. Adopting this approach, she can even think about possible unobservable variables that will be impossible to control in the study, fairly setting the study's limits. To see how it can help, we will introduce the reader to DAGs and provide an example of an application in the context of TSCS.
 
